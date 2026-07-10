@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FinFloat</class>
+ <widget class="QWidget" name="FinFloat">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>299</width>
+    <height>53</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FinFloat</string>
+  </property>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
