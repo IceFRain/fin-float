@@ -17,13 +17,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    fin_float.cpp
+    fin_float.cpp \
+    settings_window.cpp
 
 HEADERS += \
-    fin_float.h
+    fin_float.h \
+    settings_window.h
 
 FORMS += \
-    fin_float.ui
+    fin_float.ui \
+    settings_window.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
