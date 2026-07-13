@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>638</width>
-    <height>521</height>
+    <width>700</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="font">
@@ -67,7 +67,7 @@
          <property name="title">
           <string>显示属性</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2" columnstretch="4,4,4,4,1,4">
+         <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="label_show_api">
             <property name="text">
@@ -85,22 +85,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="3">
-           <widget class="QLineEdit" name="lineEdit_show_line_width"/>
-          </item>
-          <item row="0" column="4" colspan="2">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>116</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_show_orientation">
             <property name="text">
@@ -112,24 +96,11 @@
            <widget class="QComboBox" name="comboBox_show_orientation"/>
           </item>
           <item row="1" column="2">
-           <widget class="QLabel" name="label_show_line_width_2">
+           <widget class="QLabel" name="label_show_font_family">
             <property name="text">
-             <string>横向尺寸:</string>
+             <string>字体:</string>
             </property>
            </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QLineEdit" name="lineEdit_show_line_width_2"/>
-          </item>
-          <item row="1" column="4">
-           <widget class="QLabel" name="label_show_line_width_3">
-            <property name="text">
-             <string>x</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
-           <widget class="QLineEdit" name="lineEdit_show_line_width_3"/>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_show_mode">
@@ -142,24 +113,68 @@
            <widget class="QComboBox" name="comboBox_show_mode"/>
           </item>
           <item row="2" column="2">
-           <widget class="QLabel" name="label_show_line_width_4">
+           <widget class="QLabel" name="label_show_block_size">
             <property name="text">
-             <string>纵向尺寸:</string>
+             <string>显示块尺寸:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
+           <widget class="QLabel" name="label_show_block_size_x">
+            <property name="text">
+             <string>x</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QComboBox" name="comboBox_font_point_size"/>
+          </item>
+          <item row="1" column="4">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>字号:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QCheckBox" name="checkBox_show_on_hover">
+            <property name="text">
+             <string>悬停显示</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QComboBox" name="comboBox_font_family">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QSpinBox" name="spinBox_show_line_width">
+            <property name="minimum">
+             <number>1</number>
             </property>
            </widget>
           </item>
           <item row="2" column="3">
-           <widget class="QLineEdit" name="lineEdit_show_line_width_4"/>
-          </item>
-          <item row="2" column="4">
-           <widget class="QLabel" name="label_show_line_width_5">
-            <property name="text">
-             <string>x</string>
+           <widget class="QSpinBox" name="spinBox_show_block_width">
+            <property name="minimum">
+             <number>2</number>
             </property>
            </widget>
           </item>
           <item row="2" column="5">
-           <widget class="QLineEdit" name="lineEdit_show_line_width_5"/>
+           <widget class="QSpinBox" name="spinBox_show_block_height">
+            <property name="minimum">
+             <number>2</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -202,7 +217,14 @@
            </layout>
           </item>
           <item>
-           <widget class="QListWidget" name="listWidget"/>
+           <widget class="QTreeWidget" name="treeWidget_target">
+            <property name="font">
+             <font>
+              <family>MiSans</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
