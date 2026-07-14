@@ -2,30 +2,29 @@
 #define FINFLOAT_H
 
 #include <QWidget>
-#include <QDebug>
 #include <QMouseEvent>
-#include <QVector>
 #include <QPainter>
-#include <QToolTip> // 新增：用于显示气泡提示
+#include <QToolTip>
+#include <QMenu>
+#include "share_def.h"
 #include "settings_window.h"
+#include "api_poller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FinFloat; }
 QT_END_NAMESPACE
 
-// 定义单条价格线的数据结构
-struct PriceLine {
-    QString name;       // 线条名称，如 "昨收", "当前价", "阻力位"
-    double price;       // 价格值
-    QColor color;       // 线条颜色
-    int lineWidth;      // 线条粗细
-    bool isHorizontal;  // true为横线，false为纵线
-    int xOffset;        // 横向起点像素
-    int length;         // 线条长度/宽度（像素）
-
-    // 用于碰撞检测的缓存区域（在paintEvent中动态计算）
-    QRect hitRect;
-};
+//单线条的信息
+typedef struct{
+    QColor color;           //线条颜色
+    QPoint start_point;     //起始点
+    QPoint end_point;       //结束点
+    int line_width;         //线宽
+}LineInfo;
+//线条组
+typedef struct{
+    QVector<LineInfo> lines;
+}LineGroup;
 
 class FinFloat : public QWidget
 {
@@ -35,14 +34,19 @@ public:
     FinFloat(QWidget *parent = nullptr);
     ~FinFloat();
 
-    void loadConfigAndInit(); // 新增：初始化数据
+public slots:
+    //刷新显示槽
+    void slot_refresh_info(ShowTargetInfo info);
+    //设置改变槽
+    void slot_settings_changed(void);
 
 signals:
     //双击事件
     void sig_double_clicked(void);
 
+//重写窗口事件
 protected:
-    // 新增：绘制事件
+    //绘制事件
     void paintEvent(QPaintEvent *event) override;
     //鼠标点击事件
     void mousePressEvent(QMouseEvent *event) override;
@@ -50,6 +54,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     //鼠标双击事件
     void mouseDoubleClickEvent(QMouseEvent *event) override;
+    //鼠标右键事件
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
     Ui::FinFloat *ui;
@@ -57,10 +63,17 @@ private:
     QPoint m_drag_position{0,0};
     //设置界面
     SettingsWindow m_settings_w;
+    //设置项
+    AllSettings *m_settings;
+    //API接口
+    ApiPoller m_api_poller;
 
-    // 新增：数据成员
-    QVector<PriceLine> m_lines;
-    double maxPrice{110.0};
-    double minPrice{90.0};
+    //要显示的所有线条
+    QVector<LineGroup> m_line_group;
+    //缓存最新的数据
+    QVector<ShowTargetInfo> m_target_infos;
+
+    //使用设置项初始化界面
+    void init_ui_by_settings(void);
 };
 #endif // FINFLOAT_H

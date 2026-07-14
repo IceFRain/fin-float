@@ -42,7 +42,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     //默认选择第一组设置项
     ui->listWidget_setting_group->setCurrentRow(0);
     //设置表头
-    ui->treeWidget_target->setHeaderLabels(QStringList() << "显示" << "代码" << "名称");
+    ui->treeWidget_target->setHeaderLabels(QStringList() << "显示" << "代码" << "备注");
     ui->treeWidget_target->headerItem()->setTextAlignment(0, Qt::AlignCenter);
     ui->treeWidget_target->header()->setSectionResizeMode(0, QHeaderView::Fixed);
     ui->treeWidget_target->headerItem()->setTextAlignment(1, Qt::AlignCenter);
@@ -107,6 +107,7 @@ void SettingsWindow::read_settings_from_file()
         }
     }
 
+    //显示组
     QJsonObject show  = root["show"].toObject();
     m_settings.show.api = show["api"].toInt(0);
     m_settings.show.orientation = show["orientation"].toInt(0);
@@ -117,16 +118,23 @@ void SettingsWindow::read_settings_from_file()
     m_settings.show.font_point_size = show["font_point_size"].toInt(12);
     m_settings.show.block_width = show["block_width"].toInt(10);
     m_settings.show.block_height = show["block_height"].toInt(20);
+    m_settings.show.update_interval = show["update_interval"].toInt(5);
 
+    //标的组
     m_settings.target.clear();
+    m_settings.show_target_count = 0;
     QJsonArray targetArray = root["target"].toArray();
     for (const QJsonValue &val : targetArray)
     {
         QJsonObject obj = val.toObject();
         TargetInfo info;
-        info.enabled  = obj["enabled"].toInt(0);
+        info.enabled  = obj["enabled"].toInt(1);
+        if(info.enabled)
+        {
+            m_settings.show_target_count++;
+        }
         info.code     = obj["code"].toString();
-        info.name     = obj["name"].toString();
+        info.tips     = obj["tips"].toString();
         m_settings.target.append(info);
     }
 
@@ -151,19 +159,25 @@ void SettingsWindow::save_settings_to_file()
     m_settings.show.font_point_size = ui->comboBox_font_point_size->currentText().toInt();
     m_settings.show.block_width = ui->spinBox_show_block_width->value();
     m_settings.show.block_height = ui->spinBox_show_block_height->value();
+    m_settings.show.update_interval = ui->spinBox_update_interval->value();
     //读取标的列表
     m_settings.target.clear();
+    m_settings.show_target_count = 0;
     for (int i = 0; i < ui->treeWidget_target->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->treeWidget_target->topLevelItem(i);
         TargetInfo info;
         info.enabled = (item->checkState(0) == Qt::Checked) ? 1 : 0;
+        if(info.enabled)
+        {
+            m_settings.show_target_count++;
+        }
         info.code    = item->text(1);
-        info.name    = item->text(2);
+        info.tips    = item->text(2);
         m_settings.target.append(info);
     }
 
-    //show 部分
+    //显示部分
     QJsonObject show;
     show["api"]            = m_settings.show.api;
     show["orientation"]    = m_settings.show.orientation;
@@ -174,15 +188,16 @@ void SettingsWindow::save_settings_to_file()
     show["font_point_size"]= m_settings.show.font_point_size;
     show["block_width"]    = m_settings.show.block_width;
     show["block_height"]   = m_settings.show.block_height;
+    show["update_interval"]   = m_settings.show.update_interval;
 
-    //target 部分
+    //标的部分
     QJsonArray targetArray;
     for (const TargetInfo &info : m_settings.target)
     {
         QJsonObject obj;
         obj["enabled"] = info.enabled;
         obj["code"]    = info.code;
-        obj["name"]    = info.name;
+        obj["tips"]    = info.tips;
         targetArray.append(obj);
     }
 
@@ -217,6 +232,8 @@ void SettingsWindow::slot_pb_change_save_clicked()
     if (btn == QMessageBox::Yes)
     {
         save_settings_to_file();
+        //发送设置项变化信号
+        emit sig_settings_changed();
     }
 }
 
@@ -248,7 +265,7 @@ void SettingsWindow::slot_pb_target_add_clicked()
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget_target);
     item->setCheckState(0,Qt::Checked);
-    item->setText(1,"000000");
+    item->setText(1,"0");
     item->setText(2,"");
     item->setTextAlignment(1, Qt::AlignCenter);
     item->setTextAlignment(2, Qt::AlignCenter);
@@ -309,6 +326,7 @@ void SettingsWindow::slot_pb_reset_settings_clicked()
         //删除当前设置文件后,重新读取数据,设置为默认值
         QFile::remove("./settings.json");
         read_settings_from_file();
+        save_settings_to_file();
         emit sig_settings_changed();
     }
 }
@@ -335,7 +353,7 @@ void SettingsWindow::closeEvent(QCloseEvent *event)
             TargetInfo &info = m_settings.target[i];
             if(     info.enabled != ((item->checkState(0) == Qt::Checked) ? 1 : 0)
                 ||  info.code != item->text(1)
-                ||  info.name != item->text(2))
+                ||  info.tips != item->text(2))
             {
                 changed_flag = 1;
                 break;
@@ -363,6 +381,9 @@ void SettingsWindow::closeEvent(QCloseEvent *event)
             changed_flag = 1;
         }else if(m_settings.show.block_height != ui->spinBox_show_block_height->value()){
             changed_flag = 1;
+        }else if(m_settings.show.update_interval != ui->spinBox_update_interval->value())
+        {
+            changed_flag = 1;
         }
     }
 
@@ -375,6 +396,8 @@ void SettingsWindow::closeEvent(QCloseEvent *event)
         if (btn == QMessageBox::Yes)
         {
             save_settings_to_file();
+            //发送设置项变化信号
+            emit sig_settings_changed();
             event->accept();
         }
         else
@@ -429,16 +452,17 @@ void SettingsWindow::init_ui_by_settings()
     ui->comboBox_font_point_size->setCurrentText(QString::number(m_settings.show.font_point_size));
     ui->spinBox_show_block_width->setValue(m_settings.show.block_width);
     ui->spinBox_show_block_height->setValue(m_settings.show.block_height);
+    ui->spinBox_update_interval->setValue(m_settings.show.update_interval);
 
     //填充标的数据
     ui->treeWidget_target->clear();
-    ui->treeWidget_target->setHeaderLabels(QStringList() << "显示" << "代码" << "名称");
+    ui->treeWidget_target->setHeaderLabels(QStringList() << "显示" << "代码" << "备注");
     for (const TargetInfo &info : m_settings.target)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget_target);
         item->setCheckState(0, info.enabled ? Qt::Checked : Qt::Unchecked);
         item->setText(1, info.code);
-        item->setText(2, info.name);
+        item->setText(2, info.tips);
         item->setTextAlignment(1, Qt::AlignCenter);
         item->setTextAlignment(2, Qt::AlignCenter);
         item->setFlags(item->flags() | Qt::ItemIsEditable);

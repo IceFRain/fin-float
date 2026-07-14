@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,13 +17,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    api_base.cpp \
+    api_east.cpp \
+    api_poller.cpp \
+    api_sina.cpp \
     main.cpp \
     fin_float.cpp \
     settings_window.cpp
 
 HEADERS += \
+    api_base.h \
+    api_east.h \
+    api_poller.h \
+    api_sina.h \
     fin_float.h \
-    settings_window.h
+    settings_window.h \
+    share_def.h
 
 FORMS += \
     fin_float.ui \

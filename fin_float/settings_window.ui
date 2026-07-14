@@ -67,21 +67,17 @@
          <property name="title">
           <string>显示属性</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_show_api">
-            <property name="text">
-             <string>数据源:</string>
-            </property>
-           </widget>
+         <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1,1,1,0,1">
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboBox_show_orientation"/>
           </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox_show_api"/>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="comboBox_show_mode"/>
           </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_show_line_width">
-            <property name="text">
-             <string>线宽:</string>
+          <item row="2" column="3">
+           <widget class="QSpinBox" name="spinBox_show_block_width">
+            <property name="minimum">
+             <number>5</number>
             </property>
            </widget>
           </item>
@@ -92,30 +88,10 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="comboBox_show_orientation"/>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_show_font_family">
-            <property name="text">
-             <string>字体:</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_show_mode">
             <property name="text">
              <string>显示模式:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="comboBox_show_mode"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_show_block_size">
-            <property name="text">
-             <string>显示块尺寸:</string>
             </property>
            </widget>
           </item>
@@ -129,29 +105,34 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="5">
-           <widget class="QComboBox" name="comboBox_font_point_size"/>
-          </item>
-          <item row="1" column="4">
-           <widget class="QLabel" name="label">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_show_api">
             <property name="text">
-             <string>字号:</string>
+             <string>数据源:</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="5">
-           <widget class="QCheckBox" name="checkBox_show_on_hover">
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_show_line_width">
             <property name="text">
-             <string>悬停显示</string>
+             <string>线宽:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QComboBox" name="comboBox_font_family">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_show_block_size">
+            <property name="text">
+             <string>显示块尺寸:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboBox_show_api"/>
+          </item>
+          <item row="2" column="5">
+           <widget class="QSpinBox" name="spinBox_show_block_height">
+            <property name="minimum">
+             <number>5</number>
             </property>
            </widget>
           </item>
@@ -162,19 +143,59 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
-           <widget class="QSpinBox" name="spinBox_show_block_width">
-            <property name="minimum">
-             <number>2</number>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_show_font_family">
+            <property name="text">
+             <string>字体:</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="5">
-           <widget class="QSpinBox" name="spinBox_show_block_height">
-            <property name="minimum">
-             <number>2</number>
+          <item row="3" column="1" colspan="2">
+           <widget class="QComboBox" name="comboBox_font_family">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
             </property>
            </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>字号:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_update_interval">
+            <property name="text">
+             <string>刷新间隔:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QSpinBox" name="spinBox_update_interval">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4" colspan="2">
+           <widget class="QCheckBox" name="checkBox_show_on_hover">
+            <property name="text">
+             <string>悬停显示详情</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4" colspan="2">
+           <widget class="QLabel" name="label_update_interval_min">
+            <property name="text">
+             <string>分钟</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="4" colspan="2">
+           <widget class="QComboBox" name="comboBox_font_point_size"/>
           </item>
          </layout>
         </widget>
@@ -224,6 +245,11 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
            </widget>
           </item>
          </layout>

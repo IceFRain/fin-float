@@ -2,54 +2,12 @@
 #define SETTINGS_WINDOW_H
 
 #include <QWidget>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QFile>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QUrl>
 #include <QMessageBox>
 #include <QDate>
 #include <QFontDatabase>
 #include <QComboBox>
 #include <QCloseEvent>
-
-//API类型
-enum DATA_API{API_SINA,API_EAST};
-//显示横纵向
-enum SHOW_ORIENTATION{ORIENTATION_H,ORIENTATION_V};
-//显示模式
-enum SHOW_MODE{MODE_GRAPHICAL,MODE_NUMERIC};
-
-//显示设置项结构体
-typedef struct
-{
-    short api;                          //数据源选择 east,sina
-    short orientation;                  //显示方向 横向,纵向
-    short mode;                         //显示模式 图形,数字
-    short line_width;                   //图形线宽
-    short show_on_hover;                //悬停显示开关
-    QString font_family;                //数字字体
-    short font_point_size;              //数字字体大小
-    short block_width;                  //显示块宽度
-    short block_height;                 //显示块高度
-}ShowSettings;
-//标的结构体
-typedef struct
-{
-    short enabled;                      //当前标的是否需要显示
-    QString code;                       //当前标的代码
-    QString name;                       //当前标的名称,自动获取
-}TargetInfo;
-//设置项结构体
-typedef struct
-{
-    ShowSettings show;
-    QVector<TargetInfo> target;
-}AllSettings;
-
-#define SOFT_VERSION    "V0.0.1"
+#include "share_def.h"
 
 namespace Ui {
 class SettingsWindow;
@@ -68,6 +26,8 @@ public:
     void read_settings_from_file(void);
     //保存参数配置
     void save_settings_to_file(void);
+    //设置指定序号标的名称
+    void set_name(uint32_t index);
 
 public slots:
     //设置保存按钮点击槽
