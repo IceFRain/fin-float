@@ -47,7 +47,7 @@ typedef struct
     int show_target_count;              //要显示的标的数量,不保存,读写时计算
 }AllSettings;
 
-#define SOFT_VERSION    "V0.0.1"
+#define SOFT_VERSION    "V1.0.0"
 
 //定义要悬停显示的标的信息
 typedef struct{
@@ -57,6 +57,7 @@ typedef struct{
     double today_high;      //今高
     double today_low;       //今低
     double current_price;   //当前
+    double rate;            //幅度
 }ShowTargetInfo;
 
 #endif // SHARE_DEF_H

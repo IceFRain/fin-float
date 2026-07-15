@@ -42,6 +42,9 @@ private:
     int32_t m_current_id;
     //缓存获取数据
     APIGetInfo m_get_info;
+
+    //获取标的数据
+    void get_target_info();
 };
 
 #endif // APIPOLLER_H

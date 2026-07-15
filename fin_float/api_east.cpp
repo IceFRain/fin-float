@@ -26,9 +26,10 @@ int ApiEast::handle_reply(APIGetInfo &get_info, QNetworkReply *reply)
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(response, &parseError);
 
-    //本api一次即可完成所需数据获取
+    //本api一次即可完成所需数据获取,剩余步骤置0
     get_info.step_flag = 0;
 
+    //JSON格式检查
     if (parseError.error != QJsonParseError::NoError)
     {
         qDebug()<<"JSON parse error:"<<parseError.errorString();

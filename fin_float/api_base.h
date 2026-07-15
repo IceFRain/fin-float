@@ -19,10 +19,14 @@ class ApiBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit ApiBase(QObject *parent = nullptr);
+    explicit ApiBase(QObject *parent = nullptr)
+    {
+        Q_UNUSED(parent)
+    };
     virtual ~ApiBase(){};
 
     //虚函数默认返回-1,未实现的函数通过返回值进行判断
+    
     //获取当前信息
     virtual int get_current_info(APIGetInfo &get_info, QNetworkAccessManager *manager)
     {

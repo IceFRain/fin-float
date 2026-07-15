@@ -43,6 +43,8 @@ public slots:
     void slot_pb_project_url_github_clicked(void);
     //设置初始化按钮点击槽
     void slot_pb_reset_settings_clicked(void);
+    //显示模式改变槽
+    void slot_cb_show_mode_changed(int current_index);
 
 signals:
     //设置改变信号

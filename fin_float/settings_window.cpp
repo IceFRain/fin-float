@@ -39,6 +39,9 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     connect(ui->pushButton_project_url_gitee,&QPushButton::clicked,this,&SettingsWindow::slot_pb_project_url_gitee_clicked);
     connect(ui->pushButton_reset_settings,&QPushButton::clicked,this,&SettingsWindow::slot_pb_reset_settings_clicked);
 
+    //下拉框连接
+    connect(ui->comboBox_show_mode,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&SettingsWindow::slot_cb_show_mode_changed);
+
     //默认选择第一组设置项
     ui->listWidget_setting_group->setCurrentRow(0);
     //设置表头
@@ -115,8 +118,8 @@ void SettingsWindow::read_settings_from_file()
     m_settings.show.line_width = show["line_width"].toInt(1);
     m_settings.show.show_on_hover = show["show_on_hover"].toInt(1);
     m_settings.show.font_family = show["font_family"].toString("MiSans");
-    m_settings.show.font_point_size = show["font_point_size"].toInt(12);
-    m_settings.show.block_width = show["block_width"].toInt(10);
+    m_settings.show.font_point_size = show["font_point_size"].toInt(10);
+    m_settings.show.block_width = show["block_width"].toInt(11);
     m_settings.show.block_height = show["block_height"].toInt(20);
     m_settings.show.update_interval = show["update_interval"].toInt(5);
 
@@ -328,6 +331,31 @@ void SettingsWindow::slot_pb_reset_settings_clicked()
         read_settings_from_file();
         save_settings_to_file();
         emit sig_settings_changed();
+    }
+}
+
+/**
+  * @brief 显示模式改变槽
+  * @param current_index 当前选项序号
+  * @retval 无
+  * 	@arg
+ */
+void SettingsWindow::slot_cb_show_mode_changed(int current_index)
+{
+    //根据模式给出建议尺寸
+    switch (current_index)
+    {
+        //图表
+        case 0:
+            ui->spinBox_show_block_width->setValue(11);
+            ui->spinBox_show_block_height->setValue(20);
+        break;
+
+        //文字
+        case 1:
+            ui->spinBox_show_block_width->setValue(95);
+            ui->spinBox_show_block_height->setValue(20);
+        break;
     }
 }
 

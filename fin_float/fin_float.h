@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QToolTip>
 #include <QMenu>
+#include <QMutex>
 #include "share_def.h"
 #include "settings_window.h"
 #include "api_poller.h"
@@ -72,6 +73,9 @@ private:
     QVector<LineGroup> m_line_group;
     //缓存最新的数据
     QVector<ShowTargetInfo> m_target_infos;
+//    //保护m_target_infos和m_line_group
+//    QMutex m_data_mutex;
+
 
     //使用设置项初始化界面
     void init_ui_by_settings(void);

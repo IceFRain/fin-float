@@ -27,6 +27,9 @@ ApiPoller::ApiPoller(QObject *parent) : QObject(parent)
  */
 ApiPoller::~ApiPoller()
 {
+    m_timer.stop();
+    m_timer.disconnect();
+    m_net_access_manager->disconnect();
     delete m_net_access_manager;
     delete m_apis[API_EAST];
     delete m_apis[API_SINA];
@@ -34,14 +37,15 @@ ApiPoller::~ApiPoller()
 
 /**
   * @brief 使用设置项进行配置
-  * @param 无
+  * @param settings 设置指针
   * @retval 无
   * 	@arg
  */
 void ApiPoller::set_by_settings(AllSettings *settings)
 {
+    //缓存设置指针
     m_settings = settings;
-    //定时0则不循环读取
+    //定时设置为0表示手动读取
     if(m_settings->show.update_interval>0)
     {
         m_timer.setInterval(m_settings->show.update_interval * 60000);
@@ -61,28 +65,12 @@ void ApiPoller::set_by_settings(AllSettings *settings)
  */
 void ApiPoller::slot_timer_timeout()
 {
-    //步骤置位为最大
+    //步骤置为最大
     m_get_info.step_flag = INT32_MAX;
-    //查找第一个需要读取的标的,检测代码长度,避免误操作
-    m_current_id = 0;
-    for(; m_current_id<m_settings->target.size(); m_current_id++)
-    {
-        if(m_settings->target[m_current_id].enabled
-                && m_settings->target[m_current_id].code.size()>3)
-        {
-            break;
-        }
-    }
 
-    //找到了才读取
-    if(m_current_id<m_settings->target.size())
-    {
-        m_get_info.info.code = m_settings->target[m_current_id].code;
-        if(m_apis[m_settings->show.api])
-        {
-            m_apis[m_settings->show.api]->get_current_info(m_get_info,m_net_access_manager);
-        }
-    }
+    //获取第一个标的的数据
+    m_current_id = 0;
+    get_target_info();
 }
 
 /**
@@ -104,14 +92,14 @@ void ApiPoller::slot_net_access_finished(QNetworkReply *reply)
     }
     else
     {
-        //调用API处理接口
+        //调用API处理收包的接口
         result = m_apis[m_settings->show.api]->handle_reply(m_get_info,reply);
-        //接口返回成功时进行检查,否则直接进行确定是否需要发送信号
+        //接口返回成功时进行检查,否则直接停止查询
         if(result == 0)
         {
+            //有剩余待完成的步骤则继续读取本标的
             if(m_get_info.step_flag)
             {
-                //没有读取完毕则再继续读取本标的
                 m_apis[m_settings->show.api]->get_current_info(m_get_info,m_net_access_manager);
                 return;
             }
@@ -119,26 +107,40 @@ void ApiPoller::slot_net_access_finished(QNetworkReply *reply)
             //发送读取完的数据
             emit sig_refresh_info(m_get_info.info);
 
-            //步骤置位为最大,查找下一个要读取的标的
-            m_get_info.step_flag = INT32_MAX;
+            //获取下一个标的的数据
             m_current_id++;
-            for(; m_current_id<m_settings->target.size(); m_current_id++)
-            {
-                if(m_settings->target[m_current_id].enabled
-                      && m_settings->target[m_current_id].code.size()>3)
-                {
-                    break;
-                }
-            }
-            //找到了才读取
-            if(m_current_id<m_settings->target.size())
-            {
-                m_get_info.info.code = m_settings->target[m_current_id].code;
-                if(m_apis[m_settings->show.api])
-                {
-                    m_apis[m_settings->show.api]->get_current_info(m_get_info,m_net_access_manager);
-                }
-            }
+            get_target_info();
+        }
+    }
+}
+
+/**
+  * @brief 获取标的数据
+  * @param 无
+  * @retval 无
+  * 	@arg
+ */
+void ApiPoller::get_target_info()
+{
+    //步骤置位为最大,查找下一个要读取的标的
+    m_get_info.step_flag = INT32_MAX;
+    for(; m_current_id<m_settings->target.size(); m_current_id++)
+    {
+        //使能且代码有效才算找到
+        if(m_settings->target[m_current_id].enabled
+              && m_settings->target[m_current_id].code.size()>3)
+        {
+            break;
+        }
+    }
+    //找到了才去操作api进行读取
+    if(m_current_id<m_settings->target.size())
+    {
+        //读取时使用找到的代码
+        m_get_info.info.code = m_settings->target[m_current_id].code;
+        if(m_apis[m_settings->show.api])
+        {
+            m_apis[m_settings->show.api]->get_current_info(m_get_info,m_net_access_manager);
         }
     }
 }
